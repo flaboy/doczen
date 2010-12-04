@@ -1,0 +1,39 @@
+#!/usr/bin/php
+<?php
+function __autoload($name){
+    if(substr($name,0,7)=='doczen_'){
+        include dirname(__FILE__).'/src/'
+                .str_replace('_','/',substr($name,7)).'.php';
+    }else{
+        return false;
+    }
+}
+
+switch($_SERVER['argv'][1]){
+    
+    case 'make':
+        $doczen_master = new doczen_master;
+        $doczen_master->scan($_SERVER['argv'][2]);
+        $doczen_master->build('html');
+    break;
+    
+    case 'init':
+        doczen_utils::sync_dir(dirname(__FILE__).'/skel', '.');
+        break;
+    
+    default:
+        $cmdname = basename($_SERVER['argv'][0]);
+        echo <<<EOF
+Usage:
+================================
+    $cmdname make:
+        编译文档
+        
+    $cmdname init:
+        初始化文档
+
+
+EOF;
+}
+
+#vim:ft=php

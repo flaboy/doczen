@@ -1,0 +1,121 @@
+文档编辑器
+
+
+本系统采用txt2tags作为结构化文本语言。
+
+http://txt2tags.org/zh/manpage-zh.html
+
+= 标题 =
+
+带数字编号的标题
++ 文字 +
+
+隔离行
+-----------------------
+
+粗隔离行
+=======================
+
+图片
+[filename.jpg]
+链接
+[标签 url地址]
+
+粗体asdf**文字**sdfs
+
+斜体//文字//, 下划线:__文字__, 删除线:--文字--, 等宽:``文字``
+
+原始文本:""文字"",标记文本:''文字''
+
+引用                
+	文字
+	
+列表
+- 文字
+- 文字
+- 文字
+- 文字
+
+带编号的列表
++ 文字
++ 文字
++ 文字
++ 文字
+
+定义式列表
+: 文字
+: 文字
+: 文字
+: 文字
+
+表格
+|| 单元格1 | 单元格2 | 单元格3 ||
+| 单元格1 | 单元格2 | 单元格3 |
+| 单元格1 | 单元格2 | 单元格3 |
+
+
+完全引用行
+``` 文字
+
+原文引用行
+""" 文字
+
+标记引用行
+''' 文字
+
+
+```
+完全引用块
+as	sadfa
+	asdfaf
+		asfd
+多行文本
+```
+
+原文引用块
+
+"""
+多行文本
+"""
+
+标记引用块
+
+'''
+多行文本
+'''
+
+```
+<?php
+function begin($code,$options=''){
+    array_unshift($this->_blocks,$code);
+    $this->part[] = array(DOC_CODE_BEGIN,$code,$options);
+}
+
+function subject($depth,$text){
+    $this->toc[] = array($depth,$text,'#id'.$this->ref_id);
+    $this->part[] = array(DOC_CODE_TITLE,$text,$depth,$this->ref_id++);
+}
+
+function begin_pre($type){
+    $this->part[] = array(DOC_CODE_PRE,$type,'');
+}
+```
+
+dot:
+...
+digraph depends{
+	b2c->desktop;
+	b2c->content;
+	b2c->ectools;
+	content->site;
+	dbeav->base;
+	desktop->pam;
+	dev->desktop;
+	ectools->desktop;
+	extdb->base;
+	image->desktop;
+	pam->dbeav;
+	site->image;
+	varnish->desktop;
+}
+...
