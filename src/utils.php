@@ -50,7 +50,7 @@ class doczen_utils{
     }
     
     static function poweredby(){
-        return "使用 <a href=\"http://code.google.com/p/doczen/\">Doczen</a> 0.1";
+        return "使用 <a href=\"http://www.doczen.net/\">Doczen</a> 0.1";
     }
     
     static function sync_dir($from,$to,$filter=''){
@@ -75,7 +75,7 @@ class doczen_utils{
     }
     
     static function dot2file($dot_text,$target_file){
-        $dot_cmd = '/opt/local/bin/dot -T gif';
+        $dot_cmd = 'dot -T '.pathinfo($target_file,PATHINFO_EXTENSION);
         $target_handle = fopen($target_file,'w');
         
         $descriptorspec = array(

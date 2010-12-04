@@ -75,12 +75,12 @@ class doczen_render_html{
             
             case 'dot':
                 $text = "digraph G { \n".$text.' } ';
-                $gif = $this->target_tmp_file('gif');
+                $gif = $this->build_path.'/_dot_'.md5($text).'.gif';
                 $error = doczen_utils::dot2file($text, $gif);
                 if($error){
                     $this->html .= '<pre class="mark">'.htmlspecialchars($error).'</pre>';
                 }else{
-                    $this->on_inline('image',basename($gif));
+                    $this->on_inline('image',doczen_utils::path_diff($this->file,basename($gif)));
                 }
                 break;
             
@@ -92,11 +92,6 @@ class doczen_render_html{
                 }
             break;
         }
-    }
-    
-    function target_tmp_file($type){
-        $this->tmp_file_id++;
-        return $this->target_file.'.'.$this->tmp_file_id.'.'.$type;
     }
     
     function on_text($text){

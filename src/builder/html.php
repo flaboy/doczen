@@ -7,6 +7,7 @@ class doczen_builder_html{
         $this->options = &$master->options;
         $this->master = &$master;
         $this->render = new doczen_render_html;
+        $this->render->build_path = $this->build_path;
     }
     
     function finish(){
@@ -47,7 +48,6 @@ class doczen_builder_html{
             $this->had_title = true;
         }
         
-        $this->render->target_file = $target;
         $data['body'] = $this->render->fetch($data);
         unset($data['parts'], $data['links']);
         $data['toc'] = $this->render->toc($data['toc'],'reference internal');

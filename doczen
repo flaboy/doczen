@@ -9,31 +9,40 @@ function __autoload($name){
     }
 }
 
-switch($_SERVER['argv'][1]){
+if(substr($_SERVER['argv'][1],0,5)=='make-'){
+    $doczen_master = new doczen_master;
+    $doczen_master->scan($_SERVER['argv'][2]?$_SERVER['argv'][2]:'index.t2t');
+    $doczen_master->build(substr($_SERVER['argv'][1],5));
+}else{
+    switch($_SERVER['argv'][1]){
     
-    case 'make':
-        $doczen_master = new doczen_master;
-        $doczen_master->scan($_SERVER['argv'][2]);
-        $doczen_master->build('html');
-    break;
+        case 'init':
+            doczen_utils::sync_dir(dirname(__FILE__).'/skel', '.');
+            break;
     
-    case 'init':
-        doczen_utils::sync_dir(dirname(__FILE__).'/skel', '.');
-        break;
-    
-    default:
-        $cmdname = basename($_SERVER['argv'][0]);
-        echo <<<EOF
-Usage:
-================================
-    $cmdname make:
-        编译文档
-        
-    $cmdname init:
-        初始化文档
-
-
-EOF;
+        default:
+            $cmdname = basename($_SERVER['argv'][0]);
+            $builder_dir = dirname(__FILE__).'/src/builder';
+            $builders = array();
+            
+            if ($handle = opendir($builder_dir)) {
+                while (false !== ($file = readdir($handle))) {
+                    if($file{0}!='.' && substr($file,-4,4)=='.php'){
+                        include $builder_dir.'/'.$file;
+                        if(class_exists('doczen_builder_'.substr($file,0,-4))){
+                            $builders[] = substr($file,0,-4);
+                        }
+                    }
+                }
+                closedir($handle);
+            }
+            
+            echo "Usage: ".str_repeat("=",40)."\n";
+            foreach($builders as $builder){
+                echo "\t{$cmdname} make-{$builder}:\n\t\t生成{$builder}格式\n\n";
+            }
+            echo "\t{$cmdname} init:\n\t\t初始化文档\n\n";
+    }
 }
 
 #vim:ft=php
