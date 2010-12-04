@@ -81,9 +81,9 @@ class doczen_parser{
         
         $line = $this->premark_inline($line);
         
-        echo $line,"\n";
+        //echo $line,"\n";
         $line = preg_split('/\{\@MARK\@([a-z0-9]+)_(.+?)_\@KRAM\@\}/', $line, -1, PREG_SPLIT_DELIM_CAPTURE);
-        print_r($line);
+        //print_r($line);
         
         foreach($line as $k=>$v){
             switch($k%3){
@@ -102,34 +102,42 @@ class doczen_parser{
         }
     }
     
+    function mark_inline($line,$keys,$values,$k){
+        if(!$keys[$k]) return $line;
+        $parts = preg_split($keys[$k],$line, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $c = count($parts);
+        $ret = '';
+        list($tag,$format) = explode('|',$values[$k]);
+        
+        for($i=0;$i<$c;$i++){
+            if($i%2){
+                $ret .= "{@MARK@{$tag}_{$parts[$i]}_@KRAM@}";
+            }else{
+                $ret .= $this->mark_inline($parts[$i],$keys,$values,$k+1);
+            }
+        }
+        return $ret;
+    }
+    
     function premark_inline($line){
-        //if($this->inline_marker) return $this->inline_marker;
         $map = array(
-                '/\[([^\s\]].+)\s+([^\s\]]+)\]/'=>'lnk|\1 \2',
-                '/\[([^\]]+)\.('.implode('|',$this->options['image']).')\]/'=>'image|\1.\2',
-                '/\[([^\]]+)\.('.implode('|',$this->options['movie']).')\]/'=>'movie|\1.\2',
-                '/\`\`(.+?)\`\`/'=>'code|\1',
-                '/""(.+?)""/'=>'quote|\1',
-                "/''(.+?)''/"=>'mark|\1',
-                '/\/\/(.+?)\/\//'=>'italic|\1',
-                '/--(.+?)--/'=>'deleted|\1',
-                '/__(.+?)__/'=>'underline|\1',
-                '/\*\*(.+?)\*\*/'=>'strong|\1',
-                '#(http|https)(://[^\]\s]+)#'=>'lnk|\1\2',
+                '/\[([^\s\]].+\s+(?:[^\s\]]+))\]/'=>'lnk',
+                '/\[([^\]]+\.(?:'.implode('|',$this->options['image']).'))\]/'=>'image',
+                '/\[([^\]]+\.(?:'.implode('|',$this->options['movie']).'))\]/'=>'movie',
+                '/\`\`(.+?)\`\`/'=>'code',
+                '/""(.+?)""/'=>'quote',
+                "/''(.+?)''/"=>'mark',
+                '/\/\/(.+?)\/\//'=>'italic',
+                '/--(.+?)--/'=>'deleted',
+                '/__(.+?)__/'=>'underline',
+                '/\*\*(.+?)\*\*/'=>'strong',
+                '#((?:http|https)://[^\]\s]+)#'=>'lnk',
             );
             
-        foreach($map as $k=>$v){
-            preg_replace_callback($k,$text,create_function('$matches',''));
-        }
+        $keys = array_keys($map);
+        $values = array_values($map);
         
-        foreach($map as $k=>$v){
-            $p = strpos($v,'|');
-            $tag = substr($v,0,$p);
-            $replace = substr($v,$p+1);
-            $marker[] = "{@MARK@{$tag}_{$replace}_@KRAM@}"; 
-        }
-        $this->inline_marker = array(array_keys($map),$marker);
-        return $this->inline_marker;
+        return $this->mark_inline(trim($line),$keys,$values,0);
     }
     
     function line($code){
