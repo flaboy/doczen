@@ -68,6 +68,7 @@ class doczen_parser{
                         $text = '';
                         $file = $v;
                     }
+                    $file = $this->filedir.'/'.$file;
                     $this->add_link($file,0);
                     $this->insert('t2tlnk',array($file,$text));
                 }
