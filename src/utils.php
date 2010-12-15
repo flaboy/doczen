@@ -75,7 +75,13 @@ class doczen_utils{
     }
     
     static function dot2file($dot_text,$target_file){
-        $dot_cmd = 'dot -T '.pathinfo($target_file,PATHINFO_EXTENSION);
+        
+        $dot_cmd = "dot -Gcharset=\"utf-8\" -Efontsize=10 -Nfontsize=10 -T ".pathinfo($target_file,PATHINFO_EXTENSION);
+        if(isset($_ENV['GRAPHVIZ_FONT'])){
+            $font = $_ENV['GRAPHVIZ_FONT'];;
+            $dot_cmd.= " -Gfontname=\"$font\" -Efontname=\"Microsoft Yahei\" -Nfontname=\"Microsoft Yahei\"";
+        }
+        
         $target_handle = fopen($target_file,'w');
         
         $descriptorspec = array(

@@ -18,6 +18,7 @@ class doczen_parser{
     var $toc = array();
     var $ref_id = 1;
     var $inline_marker = null;
+    var $list_path = array();
     
     var $options = array(
             'image' => array('gif','png','jpg'),
@@ -244,7 +245,7 @@ class doczen_parser{
             '/^(-{5,80})\s*$/'=>'line',
             '/^\+(=+).*?(=+)(\+)\s*$/'=>'title',
             '/^(=+).*?(=+)()\s*$/'=>'title',
-            '/^([-+])\s(.*)/'=>'list',
+            '/^(\s*)([-+])\s+(.*)/'=>'list',
             '/^(\|{1,2})\s(.+)\s\|{1,2}\s*$/'=>'table',
         );
     }
@@ -305,13 +306,39 @@ class doczen_parser{
     }
 
     function proc_list($match){
-        $list_code = $match[1]=='-'?'ul':'ol';
-        if(!isset($this->_blocks[0]) || $this->_blocks[0]!=$list_code){
+        
+        $list_code = $match[2]=='-'?'ul':'ol';
+        
+        if($this->list_path[0]){
+            if($this->list_path[0][1]!=$match[1]){
+                if(!$this->list_path[0][1] || strpos($match[1],$this->list_path[0][1])===0){
+                    //push depth
+                    array_unshift($this->list_path, array($list_code,$match[1]));
+                    $this->begin($list_code);
+                }elseif(strpos($this->list_path[0][1],$match[1]===0)){
+                    $last_code = array_shift($this->list_path);
+                    $this->end($last_code[0]);
+                    //poll depth 1
+                }else{
+                    //poll all
+                    while($this->list_path[1]){
+                        $last_code = array_shift($this->list_path);
+                        $this->end($last_code[0]);
+                    }
+                }
+            }
+            if($this->list_path[0][0]!=$list_code){
+                $this->end($this->list_path[0][0]);
+                $this->list_path[0][0] = $list_code;
+                $this->begin($list_code);
+            }
+        }else{
+            array_unshift($this->list_path, array($list_code,$match[1]));
             $this->begin($list_code);
         }
-        $this->begin('li');
-        $this->body($match[2]);
-        $this->end('li');
+        
+        $this->part[] = array(DOC_CODE_BEGIN,'li',array());
+        $this->body($match[3]);
     }
 
     function proc_title($match){
