@@ -113,7 +113,7 @@ class doczen_master{
                             $data['parts'][$k][2] = $toc[$part[2]];
                         }
                         foreach((array)$toc[$part[2]] as $t){
-                            $t[0]+=2;
+                            $t[0]+=1;
                             $re_toc[] = $t;
                         }    
                     }elseif($part[1]=='t2tlnk'){

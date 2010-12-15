@@ -209,10 +209,11 @@ class doczen_render_html{
                 $link = doczen_utils::path_diff($this->file,$link);
             }
             
-            if($b>$p){
+            while($b>$p){
+                $p++;
                 $out .= str_repeat(' ',4*$p)."<ul>\n";
-                $p = $b;
             }
+            
             while($b<$p){
                 $p--;
                 $out .= str_repeat(' ',4*$p)."</ul>\n";
